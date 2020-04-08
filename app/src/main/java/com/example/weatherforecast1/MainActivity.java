@@ -26,6 +26,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //// checking network connections
+
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (null == activeNetwork) {
+            messege = "No Internet connection";
+            Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
+        } else {
+
             ////progressbar
             init();
             progressBar.setVisibility(View.VISIBLE);
@@ -52,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             listView = findViewById(R.id.listview);
 
         }
-
+    }
     private void init () {
         this.progressBar = findViewById(R.id.progressbar);
     }
