@@ -28,9 +28,15 @@ public class weatherinfoactivity extends AppCompatActivity {
         weatherinfo = new ArrayList<City>();
         //TODO here we should fill with real arraystring
         //////test
-        weatherinfo.add(new City("monday" , "344" , "847" , "snow"));
-        weatherinfo.add(new City("tuesday" , "23" , "44" , "rain"));
-        weatherinfo.add(new City("thursday" , "1233" , "2324"  , "sunny"));
+        weatherinfo.add(new City("Saturday" , "20" , "3" , "snow"));
+        weatherinfo.add(new City("Sunday" , "23" , "-1" , "rain"));
+        weatherinfo.add(new City("Monday" , "18" , "2"  , "thunder"));
+        weatherinfo.add(new City("Tuesday" , "17" , "2"  , "bizzard"));
+        weatherinfo.add(new City("Wednesday" , "20" , "1"  , "cloudy"));
+        weatherinfo.add(new City("Thursday" , "24" , "5"  , "sunny"));
+        weatherinfo.add(new City("Friday" , "19.5" , "-2.4"  , "windy"));
+
+
         /////
         recyclerView = (RecyclerView) findViewById(R.id.recylelist);
         recyclerView.setHasFixedSize(true);
