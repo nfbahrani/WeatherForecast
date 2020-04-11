@@ -333,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 forecast_of_7_days = ans;
+                                Log.i("test" , ans);
                             }
                         });
                     } catch (Exception e) {
