@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         //// checking network connections
 
@@ -40,12 +40,15 @@ public class MainActivity extends AppCompatActivity {
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (null == activeNetwork) {
+            setContentView(R.layout.activity_weatherinfoactivity);
             messege = "No Internet connection";
             Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
+
         } else
             {
+                setContentView(R.layout.activity_main);
 
-            listView= findViewById(R.id.listview);
+                listView= findViewById(R.id.listview);
             listView.setVisibility(View.GONE);
             showbtn = (Button) findViewById(R.id.showbutton);
             progressBar = findViewById(R.id.progressbar);
@@ -66,8 +69,16 @@ public class MainActivity extends AppCompatActivity {
 
                 adapter_ = new ArrayAdapter<String>(MainActivity.this , android.R.layout.simple_list_item_1, array);
                 listView.setAdapter(adapter_);
-                progressBar.setVisibility(View.GONE);
-                listView.setVisibility(View.VISIBLE);
+                //// This handler checks
+                Handler handler= new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                        listView.setVisibility(View.VISIBLE);
+                    }
+                }, 1000);
+
 
 
             }
