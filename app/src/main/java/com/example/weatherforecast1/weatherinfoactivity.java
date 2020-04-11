@@ -17,12 +17,22 @@ public class weatherinfoactivity extends AppCompatActivity {
     ArrayList<City>  weatherinfo ;
     Myadapter myadapter;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weatherinfoactivity);
+
+//        String recievedata = getIntent().getStringExtra("7dayinfo");
+//        String[] daysinfo = recievedata.split("\n");
+//
+//
+//        for ( int i =0; i < daysinfo.length;i++)
+//        {
+//            String[] tempo = daysinfo[i].split(" ");
+//            weatherinfo.add(new City(tempo[0] , tempo[3]  , tempo[2] ,tempo[1]));
+//        }
 
 
         weatherinfo = new ArrayList<City>();
