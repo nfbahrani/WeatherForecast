@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,8 +28,14 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,12 +44,19 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     String messege;
     String places = "";
+    String readdata ="";
     private String forecast_of_7_days = "";
     private EditText cityname;
 
     ArrayAdapter<String> adapter_;
     String[] array;
 
+
+    String directory = System.getProperty("user.home");
+    String fileName = "save_data.txt";
+    String absolutePath = directory + File.separator + fileName;
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -53,12 +67,34 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (null == activeNetwork) {
+        if (null == activeNetwork)
+        {
             setContentView(R.layout.activity_weatherinfoactivity);
             messege = "No Internet connection";
             Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(MainActivity.this , weatherinfoactivity.class);
 
-        } else {
+            ///// read old data /////
+            try(FileReader fileReader = new FileReader(absolutePath)) {
+                int ch = fileReader.read();
+                while(ch != -1) {
+                    System.out.print((char)ch);
+                    ch = fileReader.read();
+                    readdata += ch;
+                }
+            } catch (FileNotFoundException e) {
+                // exception handling
+            } catch (IOException e) {
+                // exception handling
+            }
+            ///////  ////// ///////
+            intent.putExtra("7daysinfo" , readdata);
+            startActivity(intent);
+
+
+        }
+
+        else {
             setContentView(R.layout.activity_main);
 
             listView = findViewById(R.id.listview);
@@ -72,89 +108,15 @@ public class MainActivity extends AppCompatActivity {
             showbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-
                     progressBar.setVisibility(View.VISIBLE);
                     Mapbox1 mapbox = new Mapbox1(cityname.getText().toString(), getApplicationContext());
                     mapbox.run();
-                    /*
-                    Log.i("test mapbox", String.valueOf(places));
-                    array = places.split("\n");
-                    Log.i("arrr ", Arrays.toString(array));
 
-                    int number_cities = array.length;
-                    Log.i("number of cities", String.valueOf(number_cities));
-                    final String[] city_names = new String[number_cities];
-                    final String[][] coordinates = new String[number_cities][2];
-*/
-//                for (int i = 0; i < number_cities; i++)
-//                {
-//
-//                    String[] temp = array[i].split(" ");
-//                    coordinates[i][0] = temp[temp.length - 2];
-//                    coordinates[i][1] = temp[temp.length - 1];
-//                    city_names[i] = temp[0];
-//                    Log.i("temp string", temp[0]);
-//                    for (int j = 0; j < temp.length - 2; j++) {
-//                        city_names[i] += temp[j];
-//                    }
-//
-//                }
-
-        /*            Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            progressBar.setVisibility(View.GONE);
-                            adapter_ = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, array);
-
-                            listView.setAdapter(adapter_);
-
-                            listView.setVisibility(View.VISIBLE);
-                        }
-                    }, 1000);
-*/
-//                adapter_ = new ArrayAdapter<String>(MainActivity.this , android.R.layout.simple_list_item_1, array);
-//
-//                listView.setAdapter(adapter_);
-//                progressBar.setVisibility(View.GONE);
-//
-//                listView.setVisibility(View.VISIBLE);
-
-/*
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            progressBar.setVisibility(View.VISIBLE);
-                            listView.setVisibility(View.GONE);
-//
-//                        WeathereAPI weathereAPI = new WeathereAPI(getApplicationContext(), coordinates[position][1] , coordinates[position][1]);
-//                        weathereAPI.run();
-
-                            Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
-//                        myintent.putExtra("7dayinfo" , forecast_of_7_days);
-
-                            startActivity(myintent);
-
-                            Handler h = new Handler();
-                            h.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setVisibility(View.GONE);
-                                }
-                            }, 1000);
-
-                        }
-                    });
-*/
                 }
 
             });
 
-
         }
-
     }
 
     class Mapbox1 extends Thread {
@@ -177,14 +139,12 @@ public class MainActivity extends AppCompatActivity {
             this.context = context;
         }
 
-
         @Override
         public void run() {
             queue = Volley.newRequestQueue(context);
             url += cityname + ".json?access_token=" + token;
             final String[] latitude = {null};
             final String[] longitude = {null};
-            final String[] resault = {""};
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -221,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                                     coordinates[i][1] = temp[temp.length - 1];
                                     city_names[i] = temp[0];
                                     Log.i("temp string", temp[0]);
-                                    for (int j = 0; j < temp.length - 2; j++) {
+                                    for (int j = 1; j < temp.length - 2; j++) {
                                         city_names[i] += temp[j];
                                     }
 
@@ -237,24 +197,10 @@ public class MainActivity extends AppCompatActivity {
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                         progressBar.setVisibility(View.VISIBLE);
                                         listView.setVisibility(View.GONE);
-                                        Log.i("coordinate" , coordinates[0][1]);
 
                                         WeathereAPI weathereAPI = new WeathereAPI(getBaseContext(), coordinates[position][1] , coordinates[position][0]);
                                         weathereAPI.run();
 
-                                        Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
-                                        myintent.putExtra("7dayinfo" , forecast_of_7_days);
-                                        Log.i("sevenddaysinfo" , forecast_of_7_days);
-
-                                        startActivity(myintent);
-
-                                        Handler h = new Handler();
-                                        h.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                progressBar.setVisibility(View.GONE);
-                                            }
-                                        }, 1000);
 
                                     }
                                 });
@@ -312,31 +258,56 @@ public class MainActivity extends AppCompatActivity {
             final String[] resault = {""};
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
-                public void onResponse(JSONObject response) {
+                public void onResponse(final JSONObject response) {
                     try {
-                        JSONObject forecastObj = response.getJSONObject("forecast");
-                        JSONArray daysArray = forecastObj.getJSONArray("forecastday");
-                        for (int i = 0; i < daysArray.length(); i++) {
-                            JSONObject feature = daysArray.getJSONObject(i);
-                            JSONObject geometry = feature.getJSONObject("geometry");
-                            String placeName = feature.getString("place_name");
-                            mintemp_c[0] = String.valueOf(feature.getJSONObject("mintemp_c"));
-                            maxtemp_c[0] = String.valueOf(feature.getJSONObject("maxtemp_c"));
-                            date_epoch[0] = String.valueOf(feature.getJSONObject("date_epoch"));
-                            JSONObject condition = feature.getJSONObject("condition");
-                            status[0] = String.valueOf(condition.getJSONObject("text"));
-                            ans += String.valueOf(date_epoch) + " " + status + " " + mintemp_c[0] + " " + maxtemp_c[0] + "\n";
+                        Log.i("test0" , String.valueOf(num_of_days));
+
+                        JSONObject forecast = response.getJSONObject("forecast");
+                        JSONArray forecastday = forecast.getJSONArray("forecastday");
+                        for (int i = 0; i < forecastday.length(); i++) {
+                            JSONObject current_day = forecastday.getJSONObject(i);
+                            date_epoch[0] = String.valueOf(current_day.getLong("date_epoch"));
+                            JSONObject day = current_day.getJSONObject("day");
+                            JSONObject condition = day.getJSONObject("condition");
+                            status[0] = String.valueOf(condition.getString("text"));
+                            maxtemp_c[0] = String.valueOf(day.getDouble("maxtemp_c"));
+                            mintemp_c[0] = String.valueOf(day.getDouble("mintemp_c"));
+                            ans += String.valueOf(date_epoch[0]) + "-" + status[0] + "-" + mintemp_c[0] + "-" + maxtemp_c[0] + "\n";
                         }
-                        Log.i(TAG, "msg2 : " + ans);
+                        Log.i(TAG, "msg : " + ans);
                         Handler handler = new Handler();
                         handler.post(new Runnable() {
+                            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                             @Override
-                            public void run() {
+                            public void run()
+                            {
                                 forecast_of_7_days = ans;
-                                Log.i("test" , ans);
+                                Log.i("test" , response.toString());;
+
+                                Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
+                                myintent.putExtra("7dayinfo" , forecast_of_7_days);
+                                Log.i("sevenddaysinfo" , forecast_of_7_days);
+                                startActivity(myintent);
+
+                                Handler h = new Handler();
+                                h.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                }, 1000);
+
+                                ///// Saving datas //////
+                                try(FileWriter fileWriter = new FileWriter(absolutePath)) {
+                                    String fileContent = forecast_of_7_days;
+                                    fileWriter.write(fileContent);
+                                } catch (IOException e) {
+                                }
+                                ////// //////// ////////
+
                             }
                         });
-                    } catch (Exception e) {
+                    }catch (Exception e) {
                         Log.i(TAG, "err1 : " + e.getMessage());
                     }
                 }
