@@ -29,20 +29,22 @@ import org.json.JSONObject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Button showbtn;
     private ListView listView;
     String messege;
-    private String places = "";
+    String places = "";
     private String forecast_of_7_days = "";
-    private EditText cityname ;
+    private EditText cityname;
 
     ArrayAdapter<String> adapter_;
-    String[] array = {};
+    String[] array;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
@@ -56,11 +58,10 @@ public class MainActivity extends AppCompatActivity {
             messege = "No Internet connection";
             Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
 
-        } else
-            {
-                setContentView(R.layout.activity_main);
+        } else {
+            setContentView(R.layout.activity_main);
 
-             listView= findViewById(R.id.listview);
+            listView = findViewById(R.id.listview);
             listView.setVisibility(View.GONE);
             showbtn = (Button) findViewById(R.id.showbutton);
             progressBar = findViewById(R.id.progressbar);
@@ -68,26 +69,24 @@ public class MainActivity extends AppCompatActivity {
             cityname = findViewById(R.id.Citynametext);
 
 
-
-            showbtn.setOnClickListener(new View.OnClickListener()
-            {
-            @Override
-            public void onClick(View v) {
+            showbtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
 
-                progressBar.setVisibility(View.VISIBLE);
-                Mapbox1 mapbox = new Mapbox1(cityname.getText().toString(), getApplicationContext());
-                Log.i("test mapbox", String.valueOf(array));
-                mapbox.run();
+                    progressBar.setVisibility(View.VISIBLE);
+                    Mapbox1 mapbox = new Mapbox1(cityname.getText().toString(), getApplicationContext());
+                    mapbox.run();
+                    /*
+                    Log.i("test mapbox", String.valueOf(places));
+                    array = places.split("\n");
+                    Log.i("arrr ", Arrays.toString(array));
 
-                array = places.split("\n");
-                Log.i("arrray ////// ", array[0]);
-
-                int number_cities = array.length;
-                Log.i("number of cities", String.valueOf(number_cities));
-                final String[] city_names = new String[number_cities];
-                final String[][] coordinates = new String[number_cities][2];
-
+                    int number_cities = array.length;
+                    Log.i("number of cities", String.valueOf(number_cities));
+                    final String[] city_names = new String[number_cities];
+                    final String[][] coordinates = new String[number_cities][2];
+*/
 //                for (int i = 0; i < number_cities; i++)
 //                {
 //
@@ -102,20 +101,20 @@ public class MainActivity extends AppCompatActivity {
 //
 //                }
 
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+        /*            Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        progressBar.setVisibility(View.GONE);
-                        adapter_ = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, array);
+                            progressBar.setVisibility(View.GONE);
+                            adapter_ = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, array);
 
-                        listView.setAdapter(adapter_);
+                            listView.setAdapter(adapter_);
 
-                        listView.setVisibility(View.VISIBLE);
-                    }
-                }, 1000);
-
+                            listView.setVisibility(View.VISIBLE);
+                        }
+                    }, 1000);
+*/
 //                adapter_ = new ArrayAdapter<String>(MainActivity.this , android.R.layout.simple_list_item_1, array);
 //
 //                listView.setAdapter(adapter_);
@@ -123,45 +122,42 @@ public class MainActivity extends AppCompatActivity {
 //
 //                listView.setVisibility(View.VISIBLE);
 
-
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        progressBar.setVisibility(View.VISIBLE);
-                        listView.setVisibility(View.GONE);
+/*
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            progressBar.setVisibility(View.VISIBLE);
+                            listView.setVisibility(View.GONE);
 //
 //                        WeathereAPI weathereAPI = new WeathereAPI(getApplicationContext(), coordinates[position][1] , coordinates[position][1]);
 //                        weathereAPI.run();
 
-                        Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
+                            Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
 //                        myintent.putExtra("7dayinfo" , forecast_of_7_days);
 
-                        startActivity(myintent);
+                            startActivity(myintent);
 
-                        Handler h = new Handler();
-                        h.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressBar.setVisibility(View.GONE);
-                            }
-                        }, 1000);
+                            Handler h = new Handler();
+                            h.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setVisibility(View.GONE);
+                                }
+                            }, 1000);
 
-                    }
-                });
-            }
+                        }
+                    });
+*/
+                }
 
-        });
+            });
 
 
         }
 
     }
 
-
-
-    class Mapbox1 extends Thread
-    {
+    class Mapbox1 extends Thread {
         private String cityname;
         private Context context;
         private static final String TAG = "MapboxClass ";
@@ -183,8 +179,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        public void run()
-        {
+        public void run() {
             queue = Volley.newRequestQueue(context);
             url += cityname + ".json?access_token=" + token;
             final String[] latitude = {null};
@@ -209,13 +204,64 @@ public class MainActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                Log.i(TAG, "msg : " + ans);
+                                //places = ans;
+                                //Log.i(TAG, "answer =places  : " + places);
+                                progressBar.setVisibility(View.GONE);
+                                array = ans.split("\n");
+                                int number_cities = array.length;
+                                Log.i("number of cities", String.valueOf(number_cities));
+                                final String[] city_names = new String[number_cities];
+                                final String[][] coordinates = new String[number_cities][2];
 
-                                places = ans;
+                                for (int i = 0; i < number_cities; i++)
+                                {
+
+                                    String[] temp = array[i].split(" ");
+                                    coordinates[i][0] = temp[temp.length - 2];
+                                    coordinates[i][1] = temp[temp.length - 1];
+                                    city_names[i] = temp[0];
+                                    Log.i("temp string", temp[0]);
+                                    for (int j = 0; j < temp.length - 2; j++) {
+                                        city_names[i] += temp[j];
+                                    }
+
+                                }
+
+                                adapter_ = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, city_names);
+                                listView.setAdapter(adapter_);
+                                listView.setVisibility(View.VISIBLE);
+
+
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        progressBar.setVisibility(View.VISIBLE);
+                                        listView.setVisibility(View.GONE);
+                                        Log.i("coordinate" , coordinates[0][1]);
+
+                                        WeathereAPI weathereAPI = new WeathereAPI(getBaseContext(), coordinates[position][1] , coordinates[position][0]);
+                                        weathereAPI.run();
+
+                                        Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
+                                        myintent.putExtra("7dayinfo" , forecast_of_7_days);
+                                        Log.i("sevenddaysinfo" , forecast_of_7_days);
+
+                                        startActivity(myintent);
+
+                                        Handler h = new Handler();
+                                        h.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                progressBar.setVisibility(View.GONE);
+                                            }
+                                        }, 1000);
+
+                                    }
+                                });
+
                             }
                         });
-                    } catch (Exception e)
-                    {
+                    } catch (Exception e) {
                         Log.i(TAG, "err0 : " + e.getMessage());
                     }
                 }
@@ -230,8 +276,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    class WeathereAPI extends Thread
-    {
+    class WeathereAPI extends Thread {
         private Context context;
         private static final String TAG = "WeathereAPIClass";
         private int num_of_days = 7;
@@ -282,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
                             status[0] = String.valueOf(condition.getJSONObject("text"));
                             ans += String.valueOf(date_epoch) + " " + status + " " + mintemp_c[0] + " " + maxtemp_c[0] + "\n";
                         }
-                        Log.i(TAG, "msg : " + ans);
+                        Log.i(TAG, "msg2 : " + ans);
                         Handler handler = new Handler();
                         handler.post(new Runnable() {
                             @Override
@@ -291,13 +336,13 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                     } catch (Exception e) {
-                        Log.i(TAG, "err : " + e.getMessage());
+                        Log.i(TAG, "err1 : " + e.getMessage());
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Log.i(TAG, "err : " + error.getMessage());
+                    Log.i(TAG, "err3 : " + error.getMessage());
                 }
             });
             queue.add(jsonObjectRequest);
