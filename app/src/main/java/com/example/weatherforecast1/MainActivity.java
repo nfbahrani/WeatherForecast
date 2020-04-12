@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private Button showbtn;
     private ListView listView;
     String messege;
-    String readdata ="";
+    String readdata = "";
 
     private String forecast_of_7_days = "";
     private EditText cityname;
@@ -59,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
@@ -69,8 +68,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getApplicationContext()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (null == activeNetwork)
-        {
+        if (null == activeNetwork) {
             setContentView(R.layout.activity_weatherinfoactivity);
 
             messege = "No Internet connection";
@@ -78,17 +76,14 @@ public class MainActivity extends AppCompatActivity {
             try {
                 readdata = readfile(fileName);
             } catch (IOException e) {
-                Log.i("read_error" , e.getMessage());
+                Log.i("read_error", e.getMessage());
             }
-            Intent intent = new Intent(MainActivity.this , weatherinfoactivity.class);
-            intent.putExtra("7dayinfo" , readdata);
+            Intent intent = new Intent(MainActivity.this, weatherinfoactivity.class);
+            intent.putExtra("7dayinfo", readdata);
             startActivity(intent);
             Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
 
-        }
-
-        else
-         {
+        } else {
             setContentView(R.layout.activity_main);
             listView = findViewById(R.id.listview);
             listView.setVisibility(View.GONE);
@@ -113,24 +108,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public void savefile(String file , String text) throws IOException
-    {
-            FileOutputStream fos = openFileOutput(file , Context.MODE_PRIVATE);
-            fos.write(text.getBytes());
-            fos.close();
+    public void savefile(String file, String text) throws IOException {
+        FileOutputStream fos = openFileOutput(file, Context.MODE_PRIVATE);
+        fos.write(text.getBytes());
+        fos.close();
 
     }
-    public String readfile(String file) throws IOException
-    {
-        String text ="";
+
+    public String readfile(String file) throws IOException {
+        String text = "";
         FileInputStream fis = openFileInput(file);
         int ch = fis.read();
-        while(ch != -1) {
+        while (ch != -1) {
             ch = fis.read();
-            text += (char)ch;
+            text += (char) ch;
         }
-        text = text.substring(0 , text.length()-1);
+        text = text.substring(0, text.length() - 1);
         return text;
 
     }
@@ -162,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
             url += cityname + ".json?access_token=" + token;
             final String[] latitude = {null};
             final String[] longitude = {null};
+            final String[] lat = {null}, lon = {null};
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -174,7 +168,18 @@ public class MainActivity extends AppCompatActivity {
                             JSONArray coordinates = geometry.getJSONArray("coordinates");
                             longitude[0] = coordinates.getString(0);
                             latitude[0] = coordinates.getString(1);
-                            ans += placeName + " " + longitude[0] + " " + latitude[0] + "\n";
+                            if (lat[0] == null) {
+                                lat[0] = latitude[0];
+                                lon[0] = longitude[0];
+                            }
+
+                            JSONArray temp = feature.getJSONArray("place_type");
+                            if (String.valueOf(temp.getString(0)).equals("place"))
+                                ans += placeName + " " + longitude[0] + " " + latitude[0] + "\n";
+                        }
+                        if (ans.equals("")){
+                            ans += cityname + " " + lon[0] + " " + lat[0] + "\n";
+                            Log.i("**************   ", ans);
                         }
 
                         Handler handler = new Handler();
@@ -190,8 +195,7 @@ public class MainActivity extends AppCompatActivity {
                                 final String[] city_names = new String[number_cities];
                                 final String[][] coordinates = new String[number_cities][2];
 
-                                for (int i = 0; i < number_cities; i++)
-                                {
+                                for (int i = 0; i < number_cities; i++) {
 
                                     String[] temp = array[i].split(" ");
                                     coordinates[i][0] = temp[temp.length - 2];
@@ -214,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                                         progressBar.setVisibility(View.VISIBLE);
                                         listView.setVisibility(View.GONE);
 
-                                        WeathereAPI weathereAPI = new WeathereAPI(getBaseContext(), coordinates[position][1] , coordinates[position][0]);
+                                        WeathereAPI weathereAPI = new WeathereAPI(getBaseContext(), coordinates[position][1], coordinates[position][0]);
                                         weathereAPI.run();
 
 
@@ -293,18 +297,17 @@ public class MainActivity extends AppCompatActivity {
                         handler.post(new Runnable() {
                             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                             @Override
-                            public void run()
-                            {
+                            public void run() {
                                 forecast_of_7_days = ans;
 
                                 Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
-                                myintent.putExtra("7dayinfo" , forecast_of_7_days);
-                                myintent.putExtra("nameofcity" , cityname.getText().toString());
+                                myintent.putExtra("7dayinfo", forecast_of_7_days);
+                                myintent.putExtra("nameofcity", cityname.getText().toString());
 
                                 try {
-                                    savefile(fileName,forecast_of_7_days );
+                                    savefile(fileName, forecast_of_7_days);
                                 } catch (IOException e) {
-                                   Log.i("save_error" , e.getMessage());
+                                    Log.i("save_error", e.getMessage());
                                 }
                                 startActivity(myintent);
                                 Handler h = new Handler();
@@ -313,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         });
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         Log.i(TAG, "err1 : " + e.getMessage());
                     }
                 }
