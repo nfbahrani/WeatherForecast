@@ -4,21 +4,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/sec_gradient"
+    android:background="@drawable/beauty_nature"
     tools:context=".weatherinfoactivity"
     android:orientation="vertical"
 
     >
 
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recylelist"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/City"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="5dp"
         android:animationCache="true"
 
         />
+
+    <TextView
+        android:id="@+id/City"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="147dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="0dp"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        android:textSize="33dp"
+        />
+
+    <TextView
+        android:id="@+id/timeanddate"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_below="@id/City"
+        android:layout_marginLeft="130dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="151dp"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        android:textSize="15dp" />
 
 
 </RelativeLayout>

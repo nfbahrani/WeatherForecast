@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,7 +33,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private Button showbtn;
     private ListView listView;
     String messege;
-    String places = "";
     String readdata ="";
+
     private String forecast_of_7_days = "";
     private EditText cityname;
 
@@ -52,13 +55,12 @@ public class MainActivity extends AppCompatActivity {
     String[] array;
 
 
-    String directory = System.getProperty("user.home");
     String fileName = "save_data.txt";
-    String absolutePath = directory + File.separator + fileName;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
 
         super.onCreate(savedInstanceState);
 
@@ -70,33 +72,24 @@ public class MainActivity extends AppCompatActivity {
         if (null == activeNetwork)
         {
             setContentView(R.layout.activity_weatherinfoactivity);
+
             messege = "No Internet connection";
-            Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(MainActivity.this , weatherinfoactivity.class);
 
-            ///// read old data /////
-            try(FileReader fileReader = new FileReader(absolutePath)) {
-                int ch = fileReader.read();
-                while(ch != -1) {
-                    System.out.print((char)ch);
-                    ch = fileReader.read();
-                    readdata += ch;
-                }
-            } catch (FileNotFoundException e) {
-                // exception handling
+            try {
+                readdata = readfile(fileName);
             } catch (IOException e) {
-                // exception handling
+                Log.i("read_error" , e.getMessage());
             }
-            ///////  ////// ///////
-            intent.putExtra("7daysinfo" , readdata);
+            Intent intent = new Intent(MainActivity.this , weatherinfoactivity.class);
+            intent.putExtra("7dayinfo" , readdata);
             startActivity(intent);
-
+            Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
 
         }
 
-        else {
+        else
+         {
             setContentView(R.layout.activity_main);
-
             listView = findViewById(R.id.listview);
             listView.setVisibility(View.GONE);
             showbtn = (Button) findViewById(R.id.showbutton);
@@ -118,6 +111,30 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
+
+    public void savefile(String file , String text) throws IOException
+    {
+            FileOutputStream fos = openFileOutput(file , Context.MODE_PRIVATE);
+            fos.write(text.getBytes());
+            fos.close();
+
+    }
+    public String readfile(String file) throws IOException
+    {
+        String text ="";
+        FileInputStream fis = openFileInput(file);
+        int ch = fis.read();
+        while(ch != -1) {
+            ch = fis.read();
+            text += (char)ch;
+        }
+        text = text.substring(0 , text.length()-1);
+        return text;
+
+    }
+
 
     class Mapbox1 extends Thread {
         private String cityname;
@@ -180,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
                                     coordinates[i][0] = temp[temp.length - 2];
                                     coordinates[i][1] = temp[temp.length - 1];
                                     city_names[i] = temp[0];
-                                    Log.i("temp string", temp[0]);
                                     for (int j = 1; j < temp.length - 2; j++) {
                                         city_names[i] += temp[j];
                                     }
@@ -221,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     class WeathereAPI extends Thread {
         private Context context;
         private static final String TAG = "WeathereAPIClass";
@@ -255,12 +270,10 @@ public class MainActivity extends AppCompatActivity {
             final String[] mintemp_c = {null};
             final String[] maxtemp_c = {null};
             final String[] status = {null};
-            final String[] resault = {""};
             jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(final JSONObject response) {
                     try {
-                        Log.i("test0" , String.valueOf(num_of_days));
 
                         JSONObject forecast = response.getJSONObject("forecast");
                         JSONArray forecastday = forecast.getJSONArray("forecastday");
@@ -274,6 +287,7 @@ public class MainActivity extends AppCompatActivity {
                             mintemp_c[0] = String.valueOf(day.getDouble("mintemp_c"));
                             ans += String.valueOf(date_epoch[0]) + "-" + status[0] + "-" + mintemp_c[0] + "-" + maxtemp_c[0] + "\n";
                         }
+
                         Log.i(TAG, "msg : " + ans);
                         Handler handler = new Handler();
                         handler.post(new Runnable() {
@@ -282,28 +296,20 @@ public class MainActivity extends AppCompatActivity {
                             public void run()
                             {
                                 forecast_of_7_days = ans;
-                                Log.i("test" , response.toString());;
 
                                 Intent myintent = new Intent(MainActivity.this, weatherinfoactivity.class);
                                 myintent.putExtra("7dayinfo" , forecast_of_7_days);
-                                Log.i("sevenddaysinfo" , forecast_of_7_days);
-                                startActivity(myintent);
+                                myintent.putExtra("nameofcity" , cityname.getText().toString());
 
-                                Handler h = new Handler();
-                                h.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        progressBar.setVisibility(View.GONE);
-                                    }
-                                }, 1000);
-
-                                ///// Saving datas //////
-                                try(FileWriter fileWriter = new FileWriter(absolutePath)) {
-                                    String fileContent = forecast_of_7_days;
-                                    fileWriter.write(fileContent);
+                                try {
+                                    savefile(fileName,forecast_of_7_days );
                                 } catch (IOException e) {
+                                   Log.i("save_error" , e.getMessage());
                                 }
-                                ////// //////// ////////
+                                startActivity(myintent);
+                                Handler h = new Handler();
+
+                                progressBar.setVisibility(View.GONE);
 
                             }
                         });
