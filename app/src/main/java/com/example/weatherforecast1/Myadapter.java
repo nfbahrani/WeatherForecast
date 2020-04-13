@@ -53,6 +53,28 @@ class Myadapter extends RecyclerView.Adapter<Myadapter.ViewHolder>{
             holder.date.setText("Fri");
         else if ( val +i ==7)
              holder.date.setText("Sat");
+        else if (val + i > 7)
+        {
+            val = val + i - 7;
+         if ( val  ==1)
+                holder.date.setText("Sun");
+         else if ( val  ==2)
+                holder.date.setText("Mon");
+         else if ( val ==3)
+                holder.date.setText("Tue");
+         else if ( val ==4)
+                holder.date.setText("Wed");
+         else if ( val ==5)
+                holder.date.setText("Thu");
+         else if ( val  ==6)
+                holder.date.setText("Fri");
+         else if ( val ==7)
+                holder.date.setText("Sat");
+
+        }
+
+
+
 
         holder.condition.setText("Condition:\n"+this.weatherinfo.get(i).getCondition());
         holder.max_tem.setText( this.weatherinfo.get(i).getMax_temperature() +"°C");
@@ -62,10 +84,11 @@ class Myadapter extends RecyclerView.Adapter<Myadapter.ViewHolder>{
         if (this.weatherinfo.get(i).getCondition().contains("Partly cloudy"))
             holder.icon.setImageResource(R.drawable.partlycloudy);
 
-        else if (this.weatherinfo.get(i).getCondition().contains("sun"))
+        else if (this.weatherinfo.get(i).getCondition().contains("Sunny") || this.weatherinfo.get(i).getCondition().contains("sun") || this.weatherinfo.get(i).getCondition().contains("sunny"))
             holder.icon.setImageResource(R.drawable.suny);
 
-        else if (this.weatherinfo.get(i).getCondition().contains("snow"))
+
+        else if (this.weatherinfo.get(i).getCondition().contains("snow") || this.weatherinfo.get(i).getCondition().contains("Snow") || this.weatherinfo.get(i).getCondition().contains("Snowy"))
             holder.icon.setImageResource(R.drawable.snow);
 
         else if (this.weatherinfo.get(i).getCondition().contains("bizzard"))
@@ -77,7 +100,7 @@ class Myadapter extends RecyclerView.Adapter<Myadapter.ViewHolder>{
         else if (this.weatherinfo.get(i).getCondition().contains("overcast"))
             holder.icon.setImageResource(R.drawable.cloudy);
 
-        else if (this.weatherinfo.get(i).getCondition().contains("heavy rain"))
+        else if (this.weatherinfo.get(i).getCondition().contains("heavy rain") || this.weatherinfo.get(i).getCondition().contains("Heavy rain"))
             holder.icon.setImageResource(R.drawable.shower);
 
         else  if (this.weatherinfo.get(i).getCondition().contains("wind"))
@@ -92,7 +115,7 @@ class Myadapter extends RecyclerView.Adapter<Myadapter.ViewHolder>{
         else if (this.weatherinfo.get(i).getCondition().contains("shower"))
             holder.icon.setImageResource(R.drawable.shower);
 
-        else if (this.weatherinfo.get(i).getCondition().contains("rain"))
+        else if (this.weatherinfo.get(i).getCondition().contains("rain")|| this.weatherinfo.get(i).getCondition().contains("rainy"))
             holder.icon.setImageResource(R.drawable.rainy);
 
         else if (this.weatherinfo.get(i).getCondition().contains("Thundery"))

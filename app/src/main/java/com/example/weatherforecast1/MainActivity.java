@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, weatherinfoactivity.class);
             intent.putExtra("7dayinfo", readdata);
             startActivity(intent);
+            finish();
             Toast.makeText(getApplicationContext(), messege, Toast.LENGTH_LONG).show();
 
         } else {
@@ -310,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
                                     Log.i("save_error", e.getMessage());
                                 }
                                 startActivity(myintent);
+                                //finish();
                                 Handler h = new Handler();
 
                                 progressBar.setVisibility(View.GONE);

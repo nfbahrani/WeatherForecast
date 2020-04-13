@@ -48,6 +48,7 @@ public class weatherinfoactivity extends AppCompatActivity {
 
         if (name_city == null)
             showname.setText("Old Datas!");
+
         else
             showname.setText(String.valueOf(name_city));
 
