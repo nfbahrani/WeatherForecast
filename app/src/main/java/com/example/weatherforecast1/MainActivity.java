@@ -175,7 +175,8 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             JSONArray temp = feature.getJSONArray("place_type");
-                            if (String.valueOf(temp.getString(0)).equals("place"))
+                            if (String.valueOf(temp.getString(0)).equals("place") ||
+                                    String.valueOf(temp.getString(0)).equals("region"))
                                 ans += placeName + " " + longitude[0] + " " + latitude[0] + "\n";
                         }
                         if (ans.equals("")){
